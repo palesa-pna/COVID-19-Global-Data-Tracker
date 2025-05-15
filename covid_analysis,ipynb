@@ -1,0 +1,50 @@
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv('owid-covid-data.csv')
+
+# Explore data
+print(df.columns)
+print(df.head())
+print(df.isnull().sum())
+
+# Filter for selected countries of interest (e.g., Kenya, USA, India)
+countries = ['Kenya', 'United States', 'India']
+df_filtered = df[df['location'].isin(countries)]
+
+# Drop rows with missing dates or critical values (e.g., missing total_cases)
+df_filtered = df_filtered.dropna(subset=['date', 'total_cases'])
+
+# Fill or interpolate missing numeric values if necessary (optional example)
+df_filtered['total_deaths'] = df_filtered['total_deaths'].fillna(0)
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Plot total cases
+for country in countries:
+    subset = df[df['location'] == country]
+    plt.plot(subset['date'], subset['total_cases'], label=country)
+plt.legend()
+plt.title('Total COVID-19 Cases Over Time')
+plt.show()
+
+plt.figure(figsize=(12, 6))
+for country in countries:
+    country_data = df_filtered[df_filtered['location'] == country]
+    plt.plot(country_data['date'], country_data['total_vaccinations'], label=country)
+
+plt.xlabel('Date')
+plt.ylabel('Total Vaccinations')
+plt.title('Total COVID-19 Vaccinations Over Time')
+plt.legend()
+plt.show()
+
+# Compute percentage of the vaccinated population (assuming you have the population column)
+# df_filtered['pct_vaccinated'] = (df_filtered['total_vaccinations'] / df_filtered['population']) * 100
+
+## Key Insights
+
+1. The USA had the highest number of cumulative cases and vaccinations.
+2. India's vaccination rollout was slower initially but ramped up over time.
+3. Kenya showed relatively low case numbers but also lower vaccination coverage.
